@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JS代码混淆</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.7/codemirror.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.7/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.7/mode/javascript/javascript.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <link rel="stylesheet" href="static/css/style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>JS代码混淆</h1>
+
+        <div class="region-group">
+            <div class="region active" id="static-obfuscate">静态混淆</div>
+        </div>
+
+        <div class="tab-container">
+            <div class="tab active" id="input-tab">输入</div>
+            <div class="tab" id="output-tab">输出</div>
+        </div>
+
+        <div class="editor" id="input-editor"></div>
+        <div class="editor" id="output-editor"></div>
+
+        <div class="button-group">
+            <button id="process-button">混淆</button>
+            <button id="copy-paste-button">复制/粘贴</button>
+        </div>
+    </div>
+    <script src="static/js/main.js" type="module"></script>
+    <script src="static/js/plugins/static_obfuscate.js"></script>
+    <script src="static/js/page.js" type="module"></script>
+    <script src="static/js/utils.js" type="module"></script>
+</body>
+</html>
