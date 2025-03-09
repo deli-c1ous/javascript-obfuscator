@@ -8,6 +8,11 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.7/codemirror.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.7/mode/javascript/javascript.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.21/lodash.min.js"></script>
+    <script type="module">
+        import * as $C from 'https://cdn.jsdelivr.net/npm/js-combinatorics@2.1.2/combinatorics.min.js';
+        window.Combinatorics = $C;
+    </script>
     <link rel="stylesheet" href="static/css/style.css">
 </head>
 <body>
@@ -16,6 +21,7 @@
 
         <div class="region-group">
             <div class="region active" id="static-obfuscate">静态混淆</div>
+            <div class="region" id="string2varAdd1">字符串混淆1</div>
         </div>
 
         <div class="tab-container">
@@ -26,13 +32,25 @@
         <div class="editor" id="input-editor"></div>
         <div class="editor" id="output-editor"></div>
 
+        <div class="checkbox-group">
+            <label class="checkbox-label">
+                <input type="checkbox" id="rename-checkbox" class="checkbox">
+                <span>重命名变量</span>
+            </label>
+            <label class="checkbox-label">
+                <input type="checkbox" id="escape-checkbox" class="checkbox">
+                <span>转义标识符</span>
+            </label>
+        </div>
+
         <div class="button-group">
             <button id="process-button">混淆</button>
             <button id="copy-paste-button">复制/粘贴</button>
         </div>
     </div>
     <script src="static/js/main.js" type="module"></script>
-    <script src="static/js/plugins/static_obfuscate.js"></script>
+    <script src="static/js/plugins/static_obfuscate.js" defer></script>
+    <script src="static/js/plugins/string2varAdd1.js"></script>
     <script src="static/js/page.js" type="module"></script>
     <script src="static/js/utils.js" type="module"></script>
 </body>

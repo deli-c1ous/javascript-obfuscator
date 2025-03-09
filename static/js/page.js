@@ -1,5 +1,6 @@
 import {
-    demo_code
+    static_obfuscate_demo_code,
+    string2varAdd1_demo_code,
 } from "./main.js";
 import { transform } from "./utils.js";
 
@@ -11,10 +12,12 @@ const inputEditorElement = document.querySelector('#input-editor');
 const outputEditorElement = document.querySelector('#output-editor');
 const processButton = document.querySelector('#process-button');
 const copyPasteButton = document.querySelector('#copy-paste-button');
+const renameCheckbox = document.querySelector('#rename-checkbox');
+const escapeCheckbox = document.querySelector('#escape-checkbox');
 
 let nowActiveRegion = regions[0];
 const inputEditor = CodeMirror(inputEditorElement, {
-    value: demo_code,
+    value: static_obfuscate_demo_code,
     mode: 'javascript',
     theme: 'default',
     lineNumbers: true,
@@ -38,7 +41,10 @@ regions.forEach(region => {
 
         switch (nowActiveRegion.id) {
             case 'static-obfuscate':
-                inputEditor.setValue(demo_code);
+                inputEditor.setValue(static_obfuscate_demo_code);
+                break;
+            case 'string2varAdd1':
+                inputEditor.setValue(string2varAdd1_demo_code);
                 break;
         }
         inputTab.click();
@@ -59,22 +65,26 @@ outputTab.addEventListener('click', () => {
     outputTab.classList.add('active');
 });
 processButton.addEventListener('click', () => {
+    const rename = renameCheckbox.checked;
+    const escape = escapeCheckbox.checked;
     try {
         switch (nowActiveRegion.id) {
             case 'static-obfuscate':
                 transform(ast => {
-                    const visitor = {
-                        Identifier(path) {
-                            path.node.name = escapeName(path.node.name);
-                        },
-                        StringLiteral(path) {
-                            path.node.extra.raw = `'${escapeString(path.node.value)}'`;
-                        },
-                        TemplateElement(path) {
-                            path.node.value.raw = escapeString(path.node.value.cooked);
-                        }
-                    };
-                    traverse(ast, visitor);
+                    staticObfuscate(ast, {
+                        rename: rename,
+                        escape: escape,
+                    })
+                });
+                break;
+            case 'string2varAdd1':
+                transform(ast => {
+                    staticObfuscate(ast);
+                    string2varAdd1(ast);
+                    staticObfuscate(ast, {
+                        rename: rename,
+                        escape: escape,
+                    });
                 });
                 break;
         }

@@ -4,12 +4,15 @@ async function fetchCode(filepath) {
 }
 
 const filepaths = [
-    'demo_code.js'
+    'static_obfuscate.js',
+    'string2varAdd1.js'
 ];
 const [
-    demo_code
+    static_obfuscate_demo_code,
+    string2varAdd1_demo_code
 ] = await Promise.all(filepaths.map(filepath => fetchCode(`static/js/demo_code/${filepath}`)));
 
 export {
-    demo_code
+    static_obfuscate_demo_code,
+    string2varAdd1_demo_code
 };
