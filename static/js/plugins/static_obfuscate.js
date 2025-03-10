@@ -8,22 +8,17 @@ function staticObfuscate(ast, { escape = false, rename = false } = {}) {
     function escapeStringAndName() {
         function escapeName(str) {
             return [...str].map(char => {
-                const code = char.codePointAt(0); // 获取字符的 Unicode 编码值（支持 4 字节字符）
-                return "\\u" + code.toString(16).padStart(4, '0').toUpperCase();
+                const code = char.codePointAt(0);
+                return "\\u{" + code.toString(16).toUpperCase() + "}";
             }).join('');
         }
 
         function escapeString(str) {
             return [...str].map(char => {
-                const code = char.codePointAt(0); // 获取字符的 Unicode 编码值（支持 4 字节字符）
+                const code = char.codePointAt(0);
                 if (code <= 255) {
-                    // 如果编码值在 0-255 范围内，使用 16 进制转义（\x）
                     return "\\x" + code.toString(16).padStart(2, '0').toUpperCase();
-                } else if (code <= 0xFFFF) {
-                    // 如果编码值在 0x0100-0xFFFF 范围内，使用 Unicode 转义（\u）
-                    return "\\u" + code.toString(16).padStart(4, '0').toUpperCase();
                 } else {
-                    // 如果编码值大于 0xFFFF，使用 Unicode 扩展转义（\u{...}）
                     return "\\u{" + code.toString(16).toUpperCase() + "}";
                 }
             }).join('');

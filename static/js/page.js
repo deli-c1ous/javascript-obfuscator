@@ -87,6 +87,16 @@ processButton.addEventListener('click', () => {
                     });
                 });
                 break;
+            case 'string2varAdd2':
+                transform(ast => {
+                    staticObfuscate(ast);
+                    string2varAdd2(ast);
+                    staticObfuscate(ast, {
+                        rename: rename,
+                        escape: escape,
+                    });
+                });
+                break;
         }
     } catch (e) {
         outputEditor.setValue(e.toString());
