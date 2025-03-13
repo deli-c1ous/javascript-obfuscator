@@ -4,16 +4,9 @@ const parse = Babel.packages.parser.parse;
 const generate = Babel.packages.generator.default;
 const { CartesianProduct } = Combinatorics;
 
-function staticObfuscate(ast, { escape = false, rename = false } = {}) {
-    function escapeStringAndName() {
-        function escapeName(str) {
-            return [...str].map(char => {
-                const code = char.codePointAt(0);
-                return "\\u{" + code.toString(16).toUpperCase() + "}";
-            }).join('');
-        }
-
-        function escapeString(str) {
+function staticObfuscate(ast, { escape_identifier = false, rename_variable = false } = {}) {
+    function escapeString() {
+        function escape(str) {
             return [...str].map(char => {
                 const code = char.codePointAt(0);
                 if (code <= 255) {
@@ -24,11 +17,7 @@ function staticObfuscate(ast, { escape = false, rename = false } = {}) {
             }).join('');
         }
 
-        const escape_visitor = {
-            Identifier(path) {
-                const { name } = path.node;
-                path.node.name = escapeName(name);
-            },
+        const visitor = {
             StringLiteral(path) {
                 const { value } = path.node;
                 if (!path.node.extra) {
@@ -36,14 +25,31 @@ function staticObfuscate(ast, { escape = false, rename = false } = {}) {
                         rawValue: value,
                     };
                 }
-                path.node.extra.raw = `'${escapeString(value)}'`;
+                path.node.extra.raw = `'${escape(value)}'`;
             },
             TemplateElement(path) {
                 const { cooked } = path.node.value;
-                path.node.value.raw = escapeString(cooked);
+                path.node.value.raw = escape(cooked);
             }
         };
-        traverse(ast, escape_visitor);
+        traverse(ast, visitor);
+    }
+
+    function escapeIdentifier() {
+        function escape(str) {
+            return [...str].map(char => {
+                const code = char.codePointAt(0);
+                return "\\u{" + code.toString(16).toUpperCase() + "}";
+            }).join('');
+        }
+
+        const visitor = {
+            Identifier(path) {
+                const { name } = path.node;
+                path.node.name = escape(name);
+            }
+        };
+        traverse(ast, visitor);
     }
 
     function renameVariable() {
@@ -79,20 +85,47 @@ function staticObfuscate(ast, { escape = false, rename = false } = {}) {
         traverse(ast, rename_visitor);
     }
 
+    function escapeNumber() {
+        const visitor = {
+            NumericLiteral(path) {
+                const { value } = path.node;
+                path.node.extra = {
+                    rawValue: value,
+                };
+                path.node.extra.raw = `0O${value.toString(8)}`;
+            }
+        };
+        traverse(ast, visitor);
+    }
+
     const visitor = {
+        // 点属性转方括号属性
         MemberExpression(path) {
             if (!path.node.computed) {
                 path.node.computed = true;
                 path.node.property = types.stringLiteral(path.node.property.name);
             }
         },
+        // 块语句包装
+        IfStatement(path) {
+            const { consequent, alternate } = path.node;
+            if (!types.isBlockStatement(consequent)) {
+                path.node.consequent = types.blockStatement([consequent]);
+            }
+            if (alternate && !types.isBlockStatement(alternate)) {
+                path.node.alternate = types.blockStatement([alternate]);
+            }
+        },
     };
     traverse(ast, visitor);
 
-    if (rename) {
+    escapeNumber();
+    escapeString();
+
+    if (rename_variable) {
         renameVariable();
     }
-    if (escape) {
-        escapeStringAndName();
+    if (escape_identifier) {
+        escapeIdentifier();
     }
 }

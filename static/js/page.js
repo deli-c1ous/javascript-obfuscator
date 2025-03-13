@@ -12,8 +12,8 @@ const inputEditorElement = document.querySelector('#input-editor');
 const outputEditorElement = document.querySelector('#output-editor');
 const processButton = document.querySelector('#process-button');
 const copyPasteButton = document.querySelector('#copy-paste-button');
-const renameCheckbox = document.querySelector('#rename-checkbox');
-const escapeCheckbox = document.querySelector('#escape-checkbox');
+const escapeIdentifierCheckbox = document.querySelector('#escape-identifier-checkbox');
+const renameVariableCheckbox = document.querySelector('#rename-variable-checkbox');
 
 let nowActiveRegion = regions[0];
 const inputEditor = CodeMirror(inputEditorElement, {
@@ -65,15 +65,15 @@ outputTab.addEventListener('click', () => {
     outputTab.classList.add('active');
 });
 processButton.addEventListener('click', () => {
-    const rename = renameCheckbox.checked;
-    const escape = escapeCheckbox.checked;
+    const escape_identifier = escapeIdentifierCheckbox.checked;
+    const rename_variable = renameVariableCheckbox.checked;
     try {
         switch (nowActiveRegion.id) {
             case 'static-obfuscate':
                 transform(ast => {
                     staticObfuscate(ast, {
-                        rename: rename,
-                        escape: escape,
+                        rename_variable: rename_variable,
+                        escape_identifier: escape_identifier,
                     })
                 });
                 break;
@@ -82,8 +82,8 @@ processButton.addEventListener('click', () => {
                     staticObfuscate(ast);
                     string2varAdd1(ast);
                     staticObfuscate(ast, {
-                        rename: rename,
-                        escape: escape,
+                        rename_variable: rename_variable,
+                        escape_identifier: escape_identifier,
                     });
                 });
                 break;
@@ -92,8 +92,8 @@ processButton.addEventListener('click', () => {
                     staticObfuscate(ast);
                     string2varAdd2(ast);
                     staticObfuscate(ast, {
-                        rename: rename,
-                        escape: escape,
+                        rename_variable: rename_variable,
+                        escape_identifier: escape_identifier,
                     });
                 });
                 break;
